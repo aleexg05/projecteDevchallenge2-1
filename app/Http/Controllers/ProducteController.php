@@ -3,6 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Etiqueta; 
+
+
+
 use Illuminate\Support\Facades\Auth;
 use App\Models\LlistaCompra;
 use App\Models\Producte;
@@ -19,54 +23,62 @@ class ProducteController extends Controller
 
         $productes = $llista->productes;
 
-        return view('productes.index', compact('llista', 'productes'));
+        return view('producte.index', compact('llista', 'productes'));
     }
 
     // Formulari per crear un producte dins d’una llista
-    public function create($id_llista)
-    {
-        $llista = LlistaCompra::findOrFail($id_llista);
+   public function create($id_llista)
+{
 
-        $categories = Categoria::where('id_llista_compra', $id_llista)->get();
 
-        return view('productes.create', compact('llista', 'categories'));
-    }
+    $llista = LlistaCompra::findOrFail($id_llista);
+    $categories = Categoria::where('id_llista_compra', $id_llista)->get();
+    $etiquetas = Etiqueta::all(); 
+
+    return view('producte.create', compact('llista', 'categories', 'etiquetas'));
+}
+
 
     // Guardar un nou producte
     public function store(Request $request, $id_llista)
-    {
-        $llista = LlistaCompra::findOrFail($id_llista);
+{
+    $llista = LlistaCompra::findOrFail($id_llista);
 
-        $request->validate([
-            'nom_producte' => 'required|string|max:255',
-            'id_categoria' => 'required|exists:categories,id_categoria',
-            'etiqueta_producte' => 'nullable|string|max:50',
-            'comprat' => 'boolean',
-        ]);
+    $request->validate([
+    'nom_producte' => 'required|string|max:255',
+    'id_categoria' => 'required|exists:categories,id_categoria',
+    'etiqueta_producte' => 'nullable|string|max:50',
+    'comprat' => 'boolean',
+]);
 
-        Producte::create([
-            'nom_producte'     => $request->nom_producte,
-            'id_categoria'     => $request->id_categoria,
-            'id_llista_compra' => $llista->id_llista_compra,
-            'etiqueta_producte'=> $request->etiqueta_producte,
-            'comprat'          => $request->comprat ?? false,
-        ]);
+Producte::create([
+    'nom_producte'     => $request->nom_producte,
+    'id_categoria'     => $request->id_categoria,
+    'id_llista_compra' => $llista->id_llista_compra,
+    'etiqueta_producte'=> $request->etiqueta_producte, // 👈 guarda el nom
+    'comprat'          => $request->comprat ?? false,
+]);
 
-        return redirect()->route('llistes.editar', $llista->id_llista_compra);
-    }
+
+    return redirect()->route('llistes.editar', $llista->id_llista_compra);
+}
+
 
     // Formulari per editar un producte
-    public function edit($id_llista, $id_producte)
-    {
-        $llista = LlistaCompra::findOrFail($id_llista);
-        $producte = Producte::where('id_llista_compra', $id_llista)
-                            ->where('id_producte', $id_producte)
-                            ->firstOrFail();
+   public function edit($id_llista, $id_producte)
+{
+    $llista = LlistaCompra::findOrFail($id_llista);
 
-        $categories = Categoria::where('id_llista_compra', $id_llista)->get();
+    $producte = Producte::where('id_llista_compra', $id_llista)
+                        ->where('id_producte', $id_producte)
+                        ->firstOrFail();
 
-        return view('productes.editar', compact('llista', 'producte', 'categories'));
-    }
+    $categories = Categoria::where('id_llista_compra', $id_llista)->get();
+    $etiquetas = Etiqueta::all(); // 👈 passa les etiquetes
+
+    return view('producte.editar', compact('llista', 'producte', 'categories', 'etiquetas'));
+}
+
 
     // Actualitzar un producte
     public function update(Request $request, $id_llista, $id_producte)
@@ -116,4 +128,6 @@ class ProducteController extends Controller
 
         return redirect()->route('llistes.editar', $id_llista);
     }
+
+
 }

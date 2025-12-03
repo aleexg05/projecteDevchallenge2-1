@@ -8,7 +8,8 @@ use App\Models\User;
 use App\Models\Categoria;
 use App\Models\LlistaCompra;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Etiqueta;   
+use Illuminate\Support\Facades\Auth;   // 👈 importa la façana correcta
 
 class LlistaCompraController extends Controller
 {
@@ -27,42 +28,56 @@ class LlistaCompraController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $request->validate([
-            'nom' => 'required|string|max:255',
+{
+    $request->validate([
+        'nom' => 'required|string|max:255',
+    ]);
+
+    $llista = LlistaCompra::create([
+        'nom' => $request->nom,
+        'user_id' => auth()->id(),
+    ]);
+
+    // Crear categories per defecte
+    $categoriesDefecte = [
+        'Fruites i verdures',
+        'Carn i peix',
+        'Làctics i ous',
+        'Pa i pastisseria',
+        'Congelats',
+        'Begudes',
+        'Conserves',
+        'Pasta i arròs',
+        'Snacks i dolços',
+        'Neteja',
+        'Higiene personal',
+        'Altres',
+    ];
+
+    foreach ($categoriesDefecte as $nom) {
+        Categoria::create([
+            'nom_categoria' => $nom,
+            'id_llista_compra' => $llista->id_llista_compra,
         ]);
-
-        $llista = LlistaCompra::create([
-            'nom' => $request->nom,
-            'user_id' => auth()->id(),
-        ]);
-
-        // Crear categories per defecte
-        $categoriesDefecte = [
-            'Fruites i verdures',
-            'Carn i peix',
-            'Làctics i ous',
-            'Pa i pastisseria',
-            'Congelats',
-            'Begudes',
-            'Conserves',
-            'Pasta i arròs',
-            'Snacks i dolços',
-            'Neteja',
-            'Higiene personal',
-            'Altres',
-        ];
-
-        foreach ($categoriesDefecte as $nom) {
-            Categoria::create([
-                'nom_categoria' => $nom,
-                'id_llista_compra' => $llista->id_llista_compra,
-            ]);
-        }
-
-        return redirect()->route('llistes.index')
-            ->with('success', 'Llista creada amb categories per defecte!');
     }
+
+    // Crear etiquetes per defecte
+   $etiquetasDefecte = [
+    'Urgent',
+    'Opcional',
+    'Important',
+    'Per comprar aviat',
+    'Ja en tinc',
+];
+
+foreach ($etiquetasDefecte as $nom) {
+    Etiqueta::firstOrCreate([
+        'etiqueta_producte' => $nom,
+         'user_id' => null, // 👈 globals
+    ]);
+}
+
+    return redirect()->route('llistes.index');}
 
     public function editar($id)
     {
@@ -135,7 +150,7 @@ class LlistaCompraController extends Controller
         // Ara sí, eliminar la llista
         $llista->delete();
 
-        return redirect()->route('llistes.index')->with('success', 'Llista eliminada correctament.');
+        return redirect()->route('llistes.index');
     }
     public function editarNom($id)
     {

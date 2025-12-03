@@ -38,6 +38,11 @@ class User extends Authenticatable
     {
         return $this->hasMany(LlistaCompra::class, 'user_id');
     }
+    public function etiquetas(): HasMany
+{
+    return $this->hasMany(Etiqueta::class, 'user_id');
+}
+
 
     // Relació N:M amb llistes compartides
     /**

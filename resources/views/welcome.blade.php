@@ -28,7 +28,7 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container">
-            <a class="navbar-brand" href="#">ListaCompra</a>
+            <a class="navbar-brand" href="{{ url('/llistes') }}">ListaCompra</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -37,7 +37,7 @@
                     @if (Route::has('login'))
                         @auth
                             <li class="nav-item">
-                                <a href="{{ url('/llistes.index') }}" class="nav-link">Dashboard</a>
+                                <a href="{{ url('/llistes') }}" class="nav-link">Llista Compra</a>
                             </li>
                         @else
                             <li class="nav-item">

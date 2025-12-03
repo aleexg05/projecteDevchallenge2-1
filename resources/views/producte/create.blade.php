@@ -49,10 +49,11 @@
     }
 
     /* Select options */
-    select option {
-        background: #1a0b2e;
-        color: #ffffff;
-    }
+  select option {
+    background-color: #2d2d2d; /* gris oscuro */
+    color: #ffffff;           /* texto blanco */
+}
+
 
     /* Botons */
     .btn {
@@ -122,10 +123,13 @@
         <input type="hidden" name="id_llista_compra" value="{{ $llista->id_llista_compra }}">
         <p class="form-text">Afegint producte a la llista: <strong>{{ $llista->nom }}</strong></p>
 
-        <div class="mb-3">
-            <label for="etiqueta_producte" class="form-label">Etiqueta</label>
-            <input type="text" name="etiqueta_producte" id="etiqueta_producte" class="form-control" placeholder="Opcional..." required>
-        </div>
+       <select name="etiqueta_producte" id="etiqueta_producte" class="form-select">
+    <option value="">Sense etiqueta</option>
+    @foreach($etiquetas as $etiqueta)
+        <option value="{{ $etiqueta->etiqueta_producte }}">{{ $etiqueta->etiqueta_producte }}</option>
+    @endforeach
+</select>
+
 
         <div class="text-center mt-4">
             <button type="submit" class="btn btn-outline-primary">✅ Crear producte</button>

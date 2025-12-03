@@ -4,15 +4,35 @@
 
 @section('content')
 <style>
-    .nom-producte.ratllat {
+    .list-group-item {
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        margin-bottom: 12px;
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        padding: 16px;
+        transition: all 0.3s ease;
+        width: 100%;
+        text-align: left;
+        cursor: pointer;
+        color: #fff;
+        font-size: 16px;
+    }.text-empty {
+    color: #ffffff; /* 👈 blanc */
+    opacity: 0.9;
+    font-style: italic;
+}
+
+
+    .list-group-item:hover {
+        background: rgba(255, 255, 255, 0.1);
+        box-shadow: 0 4px 12px rgba(167, 139, 250, 0.3);
+    }
+
+    .list-group-item.ratllat {
         text-decoration: line-through;
         opacity: 0.6;
         color: rgba(255, 255, 255, 0.5);
-    }
-
-    .nom-producte {
-        color: #ffffff;
-        text-decoration: none;
     }
 
     .categoria-nom {
@@ -42,18 +62,6 @@
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     }
 
-    .btn-link {
-        border: none;
-        background: transparent;
-        padding: 0;
-    }
-
-    .btn-link:hover {
-        transform: none;
-        box-shadow: none;
-        text-decoration: underline;
-    }
-
     .btn-outline-primary {
         border-color: #a78bfa;
         color: #a78bfa;
@@ -72,68 +80,6 @@
     .btn-outline-secondary:hover {
         background-color: #60a5fa;
         color: #0f3460;
-    }
-
-    .btn-outline-warning {
-        border-color: #ffc107;
-        color: #ffc107;
-        background-color: rgba(255, 193, 7, 0.1);
-    }
-    .btn-outline-warning:hover {
-        background-color: #ffc107;
-        color: #000;
-    }
-
-    .btn-outline-danger {
-        border-color: #ef4444;
-        color: #ef4444;
-        background-color: rgba(239, 68, 68, 0.1);
-    }
-    .btn-outline-danger:hover {
-        background-color: #ef4444;
-        color: #fff;
-    }
-
-    .btn-main {
-        border: none;
-        background: linear-gradient(135deg, #a78bfa, #60a5fa);
-        color: #1a0b2e;
-        font-weight: 600;
-    }
-    .btn-main:hover {
-        background: linear-gradient(135deg, #8b5cf6, #3b82f6);
-        color: #fff;
-    }
-
-    .button-group {
-        display: flex;
-        gap: 24px;
-        justify-content: center;
-        margin-bottom: 32px;
-    }
-
-    .create-button {
-        text-align: right;
-        margin-bottom: 32px;
-    }
-
-    .list-group-item {
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 8px;
-        margin-bottom: 12px;
-        background: rgba(255, 255, 255, 0.05);
-        backdrop-filter: blur(10px);
-        padding: 16px;
-        transition: all 0.3s ease;
-    }
-
-    .list-group-item:hover {
-        background: rgba(255, 255, 255, 0.1);
-        box-shadow: 0 4px 12px rgba(167, 139, 250, 0.3);
-    }
-
-    .text-muted {
-        color: rgba(255, 255, 255, 0.6) !important;
     }
 
     h1, h4 {
@@ -165,9 +111,8 @@
     <div class="button-group justify-content-center mb-4">
         <a href="{{ route('llistes.editarNom', $llista->id_llista_compra) }}" class="btn btn-outline-primary">✏️ Canviar nom</a>
         <a href="{{ route('categories.index', $llista->id_llista_compra) }}" class="btn btn-outline-secondary">🏷️ Gestionar categories</a>
-        <a href="{{ route('productes.index', $llista->id_llista_compra) }}" class="btn btn-outline-secondary">
-            📦 Gestionar productes
-        </a>
+        <a href="{{ route('productes.index', $llista->id_llista_compra) }}" class="btn btn-outline-secondary">📦 Gestionar productes</a>
+        <a href="{{ route('etiquetas.index') }}" class="btn btn-outline-secondary">🏷️ Gestionar etiquetes</a>
     </div>
 
     <!-- Productes agrupats per categories -->
@@ -182,18 +127,16 @@
     @forelse($productesPerCategoria as $nomCategoria => $productes)
         <div class="categoria-nom">🏷️ {{ $nomCategoria }}</div>
         @foreach($productes as $producte)
-            <div class="list-group-item">
-                <form action="{{ route('productes.toggle', [$llista->id_llista_compra, $producte->id_producte]) }}" method="POST" style="display:inline;">
-                    @csrf
-                    @method('PUT')
-                    <button type="submit" class="btn btn-link nom-producte {{ $producte->comprat ? 'ratllat' : '' }}">
-                        {{ $producte->nom_producte }}
-                    </button>
-                </form>
-            </div>
+            <form action="{{ route('productes.toggle', [$llista->id_llista_compra, $producte->id_producte]) }}" method="POST">
+                @csrf
+                @method('PUT')
+                <button type="submit" class="list-group-item {{ $producte->comprat ? 'ratllat' : '' }}">
+                    {{ $producte->nom_producte }}
+                </button>
+            </form>
         @endforeach
     @empty
-        <p class="text-muted">No hi ha productes en aquesta llista.</p>
+        <p class="text-empty">No hi ha productes en aquesta llista.</p>
     @endforelse
 
     <!-- Productes agrupats per etiquetes -->
@@ -208,18 +151,17 @@
     @forelse($productesPerEtiqueta as $nomEtiqueta => $items)
         <div class="categoria-nom">🏷️ {{ $nomEtiqueta }}</div>
         @foreach($items as $producte)
-            <div class="list-group-item">
-                <form action="{{ route('productes.toggle', [$llista->id_llista_compra, $producte->id_producte]) }}" method="POST" style="display:inline;">
-                    @csrf
-                    @method('PUT')
-                    <button type="submit" class="btn btn-link nom-producte {{ $producte->comprat ? 'ratllat' : '' }}">
-                        {{ $producte->nom_producte }}
-                    </button>
-                </form>
-            </div>
+            <form action="{{ route('productes.toggle', [$llista->id_llista_compra, $producte->id_producte]) }}" method="POST">
+                @csrf
+                @method('PUT')
+                <button type="submit" class="list-group-item {{ $producte->comprat ? 'ratllat' : '' }}">
+                    {{ $producte->nom_producte }}
+                </button>
+            </form>
         @endforeach
     @empty
-        <p class="text-muted">No hi ha productes amb etiquetes.</p>
+    
+        <p class="text-empty">No hi ha productes amb etiquetes.</p>
     @endforelse
 
     <!-- Botó tornar -->

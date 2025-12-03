@@ -1,19 +1,21 @@
 @extends('layouts.app')
 
-@section('títol', 'Gestionar categories')
+@section('títol', 'Gestionar etiquetes')
 
 @section('content')
 <style>
-    /* Botó de crear categoria més avall i a la dreta */
+    /* Botó de crear etiqueta més avall i a la dreta */
     .create-button {
         text-align: right;
         margin-right: 60px;
         margin-bottom: 32px;
     }
+    
 
     /* Botons generals */
     .btn {
         padding: 12px 20px;
+        margin-top:20px;
         border-radius: 6px;
         font-size: 15px;
         text-decoration: none;
@@ -84,9 +86,10 @@
         color: #fff;
     }
 
-    #nomCategoria {
+    #nomEtiqueta {
+        margin-top:30px;
         margin-left: 20px;
-        margin-bottom: 40px;
+        padding-bottom:20px;
         color: #ffffff;
         font-size: 18px;
     }
@@ -97,6 +100,7 @@
 
     .list-group-item {
         border: 1px solid rgba(255, 255, 255, 0.2);
+        padding-top:10px;
         border-radius: 8px;
         margin-bottom: 12px;
         background: rgba(255, 255, 255, 0.05);
@@ -143,50 +147,36 @@
 </style>
 
 <div class="container py-4">
-    <h1 class="mb-4 text-center">
-        🏷️ Categories de la llista: {{ $llista->nom }}
-    </h1>
+    <h1 class="mb-4 text-center">🏷️ Gestionar etiquetes</h1>
 
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    <!-- Botó de crear categoria -->
+    <!-- Botó de crear etiqueta -->
     <div class="create-button">
-        <a href="{{ route('categories.create', $llista->id_llista_compra) }}" class="btn btn-main">+ Crear categoria</a>
-     <a href="{{ route('llistes.editar', $llista->id_llista_compra) }}" class="btn btn-outline-primary">
-            ← Tornar a la llista
-        </a>
+        <a href="{{ route('etiquetas.create') }}" class="btn btn-main">➕ Afegir etiqueta</a>
+        <a href="{{ route('llistes.index') }}" class="btn btn-outline-secondary">← Tornar a les llistes</a>
     </div>
-   
 
-    <!-- Categories -->
-    @if($categories->count())
+    <!-- Etiquetes -->
+    @if($etiquetas->count())
         <ul class="list-group">
-            @foreach($categories as $categoria)
+            @foreach($etiquetas as $etiqueta)
                 <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <strong id="nomCategoria">{{ $categoria->nom_categoria }}</strong>
-                    <div class="d-flex gap-2">
-                        <a id="botoEditar" href="{{ route('categories.editar', $categoria->id_categoria) }}" class="btn btn-sm btn-outline-warning">
-                            Editar
-                        </a>
-                        <form action="{{ route('categories.eliminar', $categoria->id_categoria) }}" method="POST" onsubmit="return confirm('Segur que vols eliminar aquesta categoria?');">
-                            @csrf
-                            @method('DELETE')
-                            <button id="botoEliminar" type="submit" class="btn btn-sm btn-outline-danger">
-                                Eliminar
-                            </button>
-                        </form>
-                    </div>
+                    <strong id="nomEtiqueta">{{ $etiqueta->etiqueta_producte }}</strong>
+                    <form action="{{ route('etiquetas.destroy', $etiqueta->id_etiqueta) }}" method="POST" onsubmit="return confirm('Eliminar etiqueta?');">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
+                    </form>
                 </li>
             @endforeach
         </ul>
     @else
         <div class="alert alert-info text-center">
-            No hi ha categories creades per aquesta llista. <a href="{{ route('categories.create', $llista->id_llista_compra) }}" style="color: #a78bfa; text-decoration: underline;">Crea una nova categoria</a>.
+            No hi ha etiquetes creades. <a href="{{ route('etiquetas.create') }}" style="color: #a78bfa; text-decoration: underline;">Crea una nova etiqueta</a>.
         </div>
     @endif
-
-   
 </div>
 @endsection

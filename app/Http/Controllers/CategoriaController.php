@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Categoria;
 use App\Models\LlistaCompra;
+use App\Http\Controllers\Etiqueta;
+
 
 class CategoriaController extends Controller
 {
@@ -42,8 +44,7 @@ class CategoriaController extends Controller
 
         $categoria->delete();
 
-        return redirect()->route('categories.index', $id_llista)
-            ->with('success', 'Categoria eliminada correctament');
+        return redirect()->route('categories.index', $id_llista);
     }
 
     public function create($id_llista)
@@ -64,8 +65,7 @@ class CategoriaController extends Controller
             'id_llista_compra' => $id_llista,   // 🔹 aquí vinculem la categoria a la llista
         ]);
 
-        return redirect()->route('llistes.editar', $id_llista)
-            ->with('success', 'Categoria creada correctament.');
+        return redirect()->route('llistes.editar', $id_llista);
     }
 
     public function actualitzar(Request $request, $id_categoria)
@@ -83,7 +83,6 @@ class CategoriaController extends Controller
         $categoria->save();
 
         // 👉 Passem l'ID de la llista a la ruta
-        return redirect()->route('categories.index', $id_llista)
-            ->with('success', 'Categoria actualitzada correctament!');
+        return redirect()->route('categories.index', $id_llista);
     }
 }

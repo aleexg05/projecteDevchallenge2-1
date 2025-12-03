@@ -98,7 +98,7 @@
 <div class="container py-4">
     <h1 class="mb-4 text-center">✏️ Editar producte</h1>
 
-    <form action="{{ route('productes.actualitzar', $producte->id_producte) }}" method="POST">
+    <form action="{{ route('productes.update', [$llista->id_llista_compra, $producte->id_producte]) }}" method="POST">
         @csrf
         @method('PUT')
 
@@ -120,11 +120,20 @@
             </select>
         </div>
 
-        <div class="mb-3">
-            <label for="etiqueta_producte" class="form-label">Etiqueta</label>
-            <input type="text" name="etiqueta_producte" id="etiqueta_producte" class="form-control"
-                   value="{{ old('etiqueta_producte', $producte->etiqueta_producte) }}" required>
-        </div>
+       <div class="mb-3">
+    <label for="etiqueta_producte" class="form-label">Etiqueta</label>
+    <select name="etiqueta_producte" id="etiqueta_producte" class="form-select">
+        <option value="">Sense etiqueta</option>
+        @foreach($etiquetas as $etiqueta)
+            <option value="{{ $etiqueta->etiqueta_producte }}"
+                @if($producte->etiqueta_producte == $etiqueta->etiqueta_producte) selected @endif>
+                {{ $etiqueta->etiqueta_producte }}
+            </option>
+        @endforeach
+    </select>
+</div>
+
+
 
         <div class="text-center mt-4">
             <button type="submit" class="btn btn-outline-primary">✅ Desar canvis</button>

@@ -10,19 +10,24 @@
         text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         margin-bottom: 0;
     }
+.alert {
+    padding-left:20px;
 
+}
     /* Text general */
     body, p, label, span, div, strong {
         color: #ffffff;
     }
 
     .text-muted {
+       
         color: rgba(255, 255, 255, 0.6) !important;
     }
 
     /* Botons */
     .btn {
         padding: 10px 18px;
+        margin-top:20px;
         border-radius: 6px;
         font-size: 14px;
         text-decoration: none;
@@ -155,20 +160,24 @@
                         @endif
                     </div>
                     <div class="d-flex gap-2">
-                        <a href="{{ route('productes.editar', $producte->id_producte) }}" class="btn btn-sm btn-outline-warning">Editar</a>
-                        <form action="{{ route('productes.eliminar', $producte->id_producte) }}" method="POST" onsubmit="return confirm('Eliminar producte?');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
-                        </form>
+                        <a href="{{ route('productes.edit', [$llista->id_llista_compra, $producte->id_producte]) }}" 
+   class="btn btn-sm btn-outline-warning">Editar</a>
+
+<form action="{{ route('productes.destroy', [$llista->id_llista_compra, $producte->id_producte]) }}" 
+      method="POST" onsubmit="return confirm('Eliminar producte?');">
+    @csrf
+    @method('DELETE')
+    <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
+</form>
+
                     </div>
                 </li>
             @endforeach
         </ul>
     @else
-        <div class="alert alert-info text-center">
-            No hi ha productes en aquesta llista.
-        </div>
+            <div id="alert" class="alert alert-info text-center">
+                No hi ha productes en aquesta llista.
+            </div>
     @endif
 </div>
 @endsection

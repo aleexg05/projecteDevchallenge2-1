@@ -23,7 +23,8 @@ class DatabaseSeeder extends Seeder
         CategoriesSeeder::class,
        
         ProducteSeeder::class,
-        SessionSeeder::class
+        SessionSeeder::class,
+        EtiquetaSeeder::class
         
     ]);
 }
