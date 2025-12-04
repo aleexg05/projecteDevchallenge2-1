@@ -67,7 +67,6 @@ class LlistaCompraController extends Controller
     'Opcional',
     'Important',
     'Per comprar aviat',
-    'Ja en tinc',
 ];
 
 foreach ($etiquetasDefecte as $nom) {
