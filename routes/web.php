@@ -82,7 +82,7 @@ Route::delete('etiquetas/{id_etiqueta}', [EtiquetaController::class, 'destroy'])
 });
 
 // Google Auth
-Route::get('/', function () {
+Route::get('/https://projectedevchallenge2-1-main-eaxw06.laravel.cloud/', function () {
     $user_google = Socialite::driver('google')->user();
 
     $user = User::updateOrCreate([
