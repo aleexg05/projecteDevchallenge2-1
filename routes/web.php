@@ -82,7 +82,7 @@ Route::delete('etiquetas/{id_etiqueta}', [EtiquetaController::class, 'destroy'])
 });
 
 // Google Auth
-Route::get('/auth/google/callback', function () {
+Route::get('/', function () {
     $user_google = Socialite::driver('google')->user();
 
     $user = User::updateOrCreate([
