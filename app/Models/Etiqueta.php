@@ -9,12 +9,15 @@ class Etiqueta extends Model
 {
     protected $table = 'etiquetas';
     protected $primaryKey = 'id_etiqueta';
-    protected $fillable = ['etiqueta_producte', 'user_id'];
+    protected $fillable = ['etiqueta_producte', 'user_id', 'id_llista_compra'];
 
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    public function llistaCompra()
+    {
+        return $this->belongsTo(LlistaCompra::class, 'id_llista_compra', 'id_llista_compra');
+    }
 }
-

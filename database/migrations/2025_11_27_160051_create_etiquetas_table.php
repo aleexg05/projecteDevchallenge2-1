@@ -6,31 +6,33 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-   public function up()
-{
- Schema::create('etiquetas', function (Blueprint $table) {
-    $table->id('id_etiqueta');
-    $table->string('etiqueta_producte', 100);
-    $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('cascade'); 
-    $table->timestamps();
-
-    $table->unique(['etiqueta_producte', 'user_id']);
-});
-
-
-
-
-}
-
-
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+    public function up()
     {
-        Schema::dropIfExists('etiquetas');
+        Schema::table('etiquetas', function (Blueprint $table) {
+            // Eliminar la constraint única actual
+            $table->dropUnique(['etiqueta_producte', 'user_id']);
+
+            // Afegir id_llista_compra
+            $table->unsignedBigInteger('id_llista_compra')->nullable()->after('user_id');
+
+            // Afegir foreign key
+            $table->foreign('id_llista_compra')
+                ->references('id_llista_compra')
+                ->on('llistes_compra')
+                ->onDelete('cascade');
+
+            // Nova constraint única per llista
+            $table->unique(['etiqueta_producte', 'id_llista_compra']);
+        });
+    }
+
+    public function down()
+    {
+        Schema::table('etiquetas', function (Blueprint $table) {
+            $table->dropForeign(['id_llista_compra']);
+            $table->dropUnique(['etiqueta_producte', 'id_llista_compra']);
+            $table->dropColumn('id_llista_compra');
+            $table->unique(['etiqueta_producte', 'user_id']);
+        });
     }
 };
