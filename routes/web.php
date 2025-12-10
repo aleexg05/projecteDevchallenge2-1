@@ -96,6 +96,10 @@ Route::get('/auth/google/callback', function () {
 
     return redirect()->route('llistes.index');
 });
+Route::get('/auth/google/redirect', function () {
+    return Socialite::driver('google')->redirect();
+});
+
 
 
 // Dashboard
