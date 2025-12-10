@@ -78,6 +78,19 @@ Route::delete('etiquetas/{id_etiqueta}', [EtiquetaController::class, 'destroy'])
     Route::post('/etiquetas', [EtiquetaController::class, 'store'])->name('etiquetas.store');
     Route::delete('/etiquetas/{id_etiqueta}', [EtiquetaController::class, 'destroy'])->name('etiquetas.destroy');
 
+Route::middleware(['auth'])->group(function () {
+    // ... (les rutes existents)
+    
+    // Rutes per gestionar compartició
+    Route::get('/llistes/{id}/compartir', [LlistaCompraController::class, 'mostrarCompartir'])
+        ->name('llistes.compartir.mostrar');
+    Route::post('/llistes/{id}/compartir', [LlistaCompraController::class, 'compartir'])
+        ->name('llistes.compartir');
+    Route::delete('/llistes/{id}/compartir/{userId}', [LlistaCompraController::class, 'deixarCompartir'])
+        ->name('llistes.deixar-compartir');
+    Route::delete('/llistes/{id}/sortir', [LlistaCompraController::class, 'sortir'])
+        ->name('llistes.sortir');
+});
 
 });
 
