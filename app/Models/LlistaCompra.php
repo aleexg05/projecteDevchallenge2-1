@@ -29,7 +29,8 @@ class LlistaCompra extends Model
 
     public function usuarisCompartits()
     {
-        return $this->belongsToMany(User::class, 'usuaris_llistes_compra', 'id_llista_compra', 'user_id');
+        return $this->belongsToMany(User::class, 'usuaris_llistes_compra', 'id_llista_compra', 'user_id')
+            ->withPivot('rol');
     }
     public function categories()
     {

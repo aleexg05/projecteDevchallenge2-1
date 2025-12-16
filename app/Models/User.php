@@ -59,6 +59,6 @@ class User extends Authenticatable
             'id_llista_compra',
             'id',
             'id_llista_compra'
-        );
+        )->withPivot('rol');
     }
 }

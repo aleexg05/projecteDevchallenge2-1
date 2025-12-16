@@ -12,6 +12,22 @@ use Illuminate\Support\Facades\DB;
 
 class LlistaCompraController extends Controller
 {
+    // Mètode helper per verificar si l'usuari pot editar la llista
+    private function potEditar($llista)
+    {
+        $usuari = Auth::user();
+        
+        // El propietari sempre pot editar
+        if ($llista->user_id === $usuari->id) {
+            return true;
+        }
+        
+        // Comprovar si és un usuari compartit amb rol d'administrador
+        $compartit = $llista->usuarisCompartits()->where('user_id', $usuari->id)->first();
+        
+        return $compartit && $compartit->pivot->rol === 'administrador';
+    }
+
     public function index()
     {
         /** @var \App\Models\User $usuari */
@@ -101,7 +117,10 @@ class LlistaCompraController extends Controller
         }
         session()->put("llista_{$id}_estats", $estats);
 
-        return view('llistes.editar', compact('llista', 'categories', 'estats'));
+        // Verificar si pot editar
+        $potEditar = $this->potEditar($llista);
+
+        return view('llistes.editar', compact('llista', 'categories', 'estats', 'potEditar'));
     }
 
     public function toggleProducte($id_llista, $id_producte)
@@ -117,21 +136,27 @@ class LlistaCompraController extends Controller
     {
         $request->validate(['nom' => 'required|string|max:50']);
 
-        $llista = LlistaCompra::where('id_llista_compra', $id)
-            ->where('user_id', Auth::id())
-            ->firstOrFail();
+        $llista = LlistaCompra::findOrFail($id);
+
+        // Verificar permisos
+        if (!$this->potEditar($llista)) {
+            abort(403, 'No tens permisos per actualitzar aquesta llista');
+        }
 
         $llista->nom = $request->nom;
         $llista->save();
 
-        return redirect()->route('llistes.index')->with('success', 'Llista actualitzada.');
-    }
+        return redirect()->route('llistes.index') ;
+     }
 
     public function eliminar($id)
     {
-        $llista = LlistaCompra::where('id_llista_compra', $id)
-            ->where('user_id', Auth::id())
-            ->firstOrFail();
+        $llista = LlistaCompra::findOrFail($id);
+
+        // Verificar permisos
+        if (!$this->potEditar($llista)) {
+            abort(403, 'No tens permisos per eliminar aquesta llista');
+        }
 
         // Eliminar productes associats
         $llista->productes()->delete();
@@ -142,14 +167,17 @@ class LlistaCompraController extends Controller
         // Eliminar la llista
         $llista->delete();
 
-        return redirect()->route('llistes.index')->with('success', 'Llista eliminada correctament');
+        return redirect()->route('llistes.index');
     }
 
     public function editarNom($id)
     {
-        $llista = LlistaCompra::where('id_llista_compra', $id)
-            ->where('user_id', Auth::id())
-            ->firstOrFail();
+        $llista = LlistaCompra::findOrFail($id);
+
+        // Verificar permisos
+        if (!$this->potEditar($llista)) {
+            abort(403, 'No tens permisos per editar el nom d\'aquesta llista');
+        }
 
         return view('llistes.editarNom', compact('llista'));
     }
@@ -174,6 +202,7 @@ class LlistaCompraController extends Controller
     {
         $request->validate([
             'user_id' => 'required|exists:users,id',
+            'rol' => 'required|in:visualitzador,administrador',
         ]);
 
         $llista = LlistaCompra::where('id_llista_compra', $id)
@@ -190,8 +219,8 @@ class LlistaCompraController extends Controller
             return back()->with('error', 'La llista ja està compartida amb aquest usuari');
         }
 
-        // Compartir la llista
-        $llista->usuarisCompartits()->attach($request->user_id);
+        // Compartir la llista amb el rol especificat
+        $llista->usuarisCompartits()->attach($request->user_id, ['rol' => $request->rol]);
 
         return back()->with('success', 'Llista compartida correctament');
     }
@@ -205,6 +234,21 @@ class LlistaCompraController extends Controller
         $llista->usuarisCompartits()->detach($userId);
 
         return back()->with('success', 'Usuari eliminat de la llista compartida');
+    }
+
+    public function canviarRol(Request $request, $id, $userId)
+    {
+        $request->validate([
+            'rol' => 'required|in:visualitzador,administrador',
+        ]);
+
+        $llista = LlistaCompra::where('id_llista_compra', $id)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
+        $llista->usuarisCompartits()->updateExistingPivot($userId, ['rol' => $request->rol]);
+
+        return back()->with('success', 'Permisos actualitzats correctament');
     }
 
     public function sortir($id)
