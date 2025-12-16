@@ -151,6 +151,11 @@
         justify-content: flex-end;
         gap: 12px;
     }
+
+    /* Més espai superior pel botó d'eliminar accés */
+    .btn-delete-access {
+        margin-top: 12px;
+    }
 </style>
 
 <div class="container">
@@ -185,6 +190,13 @@
                     @endforeach
                 </select>
             </div>
+            <div class="form-group">
+                <label for="rol" class="form-label">Permisos</label>
+                <select name="rol" id="rol" required class="form-select">
+                    <option value="visualitzador">Visualitzador (només lectura)</option>
+                    <option value="administrador">Administrador (pot editar)</option>
+                </select>
+            </div>
             <button type="submit" class="btn btn-primary">Compartir</button>
         </form>
         @endif
@@ -202,16 +214,35 @@
             <div class="user-info">
                 <h4>{{ $usuari->name }}</h4>
                 <p>{{ $usuari->email }}</p>
+                <p style="color: #60a5fa; font-size: 13px; margin-top: 4px;">
+                    {{ $usuari->pivot->rol == 'administrador' ? '👑 Administrador' : '👁️ Visualitzador' }}
+                </p>
             </div>
-            <form action="{{ route('llistes.deixar-compartir', [$llista->id_llista_compra, $usuari->id]) }}"
-                method="POST"
-                onsubmit="return confirm('Estàs segur que vols deixar de compartir amb aquest usuari?');">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="btn btn-danger">
-                    Eliminar Accés
-                </button>
-            </form>
+            <div class="d-flex gap-2" style="align-items: center;">
+                <form action="{{ route('llistes.canviar-rol', [$llista->id_llista_compra, $usuari->id]) }}"
+                    method="POST" style="margin: 0;">
+                    @csrf
+                    @method('PUT')
+                    <select name="rol" class="form-select" style="width: auto; display: inline-block; padding: 8px 12px; font-size: 14px;" 
+                        onchange="this.form.submit()">
+                        <option value="visualitzador" {{ $usuari->pivot->rol == 'visualitzador' ? 'selected' : '' }}>
+                            Visualitzador
+                        </option>
+                        <option value="administrador" {{ $usuari->pivot->rol == 'administrador' ? 'selected' : '' }}>
+                            Administrador
+                        </option>
+                    </select>
+                </form>
+                <form action="{{ route('llistes.deixar-compartir', [$llista->id_llista_compra, $usuari->id]) }}"
+                    method="POST"
+                    onsubmit="return confirm('Estàs segur que vols deixar de compartir amb aquest usuari?');">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger btn-delete-access">
+                        Eliminar Accés
+                    </button>
+                </form>
+            </div>
         </div>
         @endforeach
         @endif

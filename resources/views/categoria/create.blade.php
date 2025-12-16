@@ -93,11 +93,21 @@
 <div class="container py-4">
     <h2 class="mb-4 text-center">➕ Crear nova categoria</h2>
 
+    @if ($errors->any())
+        <div class="alert alert-danger" style="background: rgba(220, 38, 38, 0.2); border: 1px solid rgba(220, 38, 38, 0.5); color: #ffffff; border-radius: 6px; padding: 15px; margin-bottom: 20px;">
+            <ul style="margin: 0; padding-left: 20px;">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <form action="{{ route('categories.store', $id_llista) }}" method="POST">
         @csrf
         <div class="mb-3">
             <label for="nom_categoria" class="form-label">Nom de la categoria</label>
-            <input type="text" name="nom_categoria" id="nom_categoria" class="form-control" placeholder="Escriu el nom de la categoria..." required>
+            <input type="text" name="nom_categoria" id="nom_categoria" class="form-control" placeholder="Escriu el nom de la categoria..." value="{{ old('nom_categoria') }}" required>
         </div>
 
         <div class="text-center mt-4">

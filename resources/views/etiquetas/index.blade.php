@@ -75,6 +75,47 @@
         color: #fff;
     }
 
+    /* Botons d'acció coherents (crear / tornar) */
+    .btn-top {
+        padding: 12px 20px;
+        border-radius: 6px;
+        font-size: 15px;
+        text-decoration: none;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: #fff;
+        transition: all 0.2s ease;
+        display: inline-block;
+        margin-left: 12px;
+    }
+
+    .btn-top:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn-top-main {
+        border: none;
+        background: linear-gradient(135deg, #a78bfa, #60a5fa);
+        color: #1a0b2e;
+        font-weight: 600;
+    }
+
+    .btn-top-main:hover {
+        background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+        color: #fff;
+    }
+
+    .btn-top-secondary {
+        border-color: #60a5fa;
+        color: #60a5fa;
+        background-color: rgba(96, 165, 250, 0.1);
+    }
+
+    .btn-top-secondary:hover {
+        background-color: #60a5fa;
+        color: #0f3460;
+    }
+
     .btn-main {
         border: none;
         background: linear-gradient(135deg, #a78bfa, #60a5fa);
@@ -147,16 +188,29 @@
 </style>
 
 <div class="container py-4">
-    <h1 class="mb-4 text-center">🏷️ Gestionar etiquetes</h1>
+    <h1 class="mb-4 text-center">
+        🏷️ Gestionar etiquetes
+        @if($llista)
+            — {{ $llista->nom }}
+        @endif
+    </h1>
 
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
+    @if($propietariLlista && !$potEditar)
+        <div class="alert alert-info text-center">
+            👁️ Visualitzant etiquetes del propietari: <strong>{{ $propietariLlista->name }}</strong>
+        </div>
+    @endif
+
     <!-- Botó de crear etiqueta -->
     <div class="create-button">
-        <a href="{{ route('etiquetas.create') }}" class="btn btn-main">➕ Afegir etiqueta</a>
-        <a href="{{ route('llistes.index') }}" class="btn btn-outline-secondary">← Tornar a les llistes</a>
+        @if($potEditar)
+            <a href="{{ route('etiquetas.create', ['return_to' => $returnTo, 'id_llista' => $llista ? $llista->id_llista_compra : null]) }}" class="btn-top btn-top-main">➕ Afegir etiqueta</a>
+        @endif
+        <a href="{{ $returnTo ?? route('llistes.index') }}" class="btn-top btn-top-secondary">← Tornar a la llista</a>
     </div>
 
     <!-- Etiquetes -->
@@ -165,17 +219,25 @@
             @foreach($etiquetas as $etiqueta)
                 <li class="list-group-item d-flex justify-content-between align-items-center">
                     <strong id="nomEtiqueta">{{ $etiqueta->etiqueta_producte }}</strong>
-                    <form action="{{ route('etiquetas.destroy', $etiqueta->id_etiqueta) }}" method="POST" onsubmit="return confirm('Eliminar etiqueta?');">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
-                    </form>
+                    @if($potEditar)
+                        <form action="{{ route('etiquetas.destroy', $etiqueta->id_etiqueta) }}" method="POST" onsubmit="return confirm('Eliminar etiqueta?');">
+                            @csrf
+                            @method('DELETE')
+                            <input type="hidden" name="return_to" value="{{ $returnTo }}">
+                            <input type="hidden" name="id_llista" value="{{ $llista ? $llista->id_llista_compra : '' }}">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
+                        </form>
+                    @endif
                 </li>
             @endforeach
         </ul>
     @else
         <div class="alert alert-info text-center">
-            No hi ha etiquetes creades. <a href="{{ route('etiquetas.create') }}" style="color: #a78bfa; text-decoration: underline;">Crea una nova etiqueta</a>.
+            @if($potEditar)
+                No hi ha etiquetes creades. <a href="{{ route('etiquetas.create', ['return_to' => $returnTo, 'id_llista' => $llista ? $llista->id_llista_compra : null]) }}" style="color: #a78bfa; text-decoration: underline;">Crea una nova etiqueta</a>.
+            @else
+                No hi ha etiquetes creades per aquesta llista.
+            @endif
         </div>
     @endif
 </div>

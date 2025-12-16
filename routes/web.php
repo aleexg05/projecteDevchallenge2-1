@@ -14,6 +14,30 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+
+// Google Auth
+Route::get('/auth/google/redirect', function () {
+    return Socialite::driver('google')->redirect();
+})->name('google.redirect');
+
+Route::get('/auth/google/callback', function () {
+    try {
+        $googleUser = Socialite::driver('google')->user();
+    } catch (\Exception $e) {
+        return redirect('/')->with('error', 'Error al autenticar con Google');
+    }
+
+    $user = User::updateOrCreate(
+        ['email' => $googleUser->getEmail()],
+        ['name' => $googleUser->getName()]
+    );
+
+    Auth::login($user, true);
+
+    return redirect()->route('llistes.index');
+})->name('google.callback');
+
+
 // Categories generals
 Route::get('/index', [CategoriaController::class, 'index'])->name('index');
 Route::get('/categoria/create', [CategoriaController::class, 'create'])->name('categoria.create');
@@ -38,15 +62,13 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/llistes/{id}', [LlistaCompraController::class, 'actualitzar'])->name('llistes.actualitzar');
     Route::delete('/llistes/{id}', [LlistaCompraController::class, 'eliminar'])->name('llistes.eliminar');
     Route::get('/llistes/{id}/editarNom', [LlistaCompraController::class, 'editarNom'])->name('llistes.editarNom');
-Route::get('/etiquetas', [EtiquetaController::class, 'index'])->name('etiquetas.index');
-Route::get('/llistes/{id_llista}/etiquetas', [EtiquetaController::class, 'index'])
-    ->name('etiquetas.index');
-    
-    Route::get('etiquetas', [EtiquetaController::class, 'index'])->name('etiquetas.index');
-Route::get('etiquetas/create', [EtiquetaController::class, 'create'])->name('etiquetas.create');
-Route::post('etiquetas', [EtiquetaController::class, 'store'])->name('etiquetas.store');
-Route::delete('etiquetas/{id_etiqueta}', [EtiquetaController::class, 'destroy'])->name('etiquetas.destroy');
 
+    // Etiquetes (amb suport per llistes opcionals)
+    Route::get('/llistes/{id_llista}/etiquetas', [EtiquetaController::class, 'index'])->name('llistes.etiquetas.index');
+    Route::get('/etiquetas', [EtiquetaController::class, 'index'])->name('etiquetas.index');
+    Route::get('/etiquetas/create', [EtiquetaController::class, 'create'])->name('etiquetas.create');
+    Route::post('/etiquetas', [EtiquetaController::class, 'store'])->name('etiquetas.store');
+    Route::delete('/etiquetas/{id_etiqueta}', [EtiquetaController::class, 'destroy'])->name('etiquetas.destroy');
 
     // Categories dins d’una llista
     Route::get('/llistes/{id}/categories/create', [CategoriaController::class, 'create'])->name('categories.create');
@@ -88,30 +110,15 @@ Route::middleware(['auth'])->group(function () {
         ->name('llistes.compartir');
     Route::delete('/llistes/{id}/compartir/{userId}', [LlistaCompraController::class, 'deixarCompartir'])
         ->name('llistes.deixar-compartir');
+    Route::put('/llistes/{id}/compartir/{userId}/rol', [LlistaCompraController::class, 'canviarRol'])
+        ->name('llistes.canviar-rol');
     Route::delete('/llistes/{id}/sortir', [LlistaCompraController::class, 'sortir'])
         ->name('llistes.sortir');
 });
 
 });
 
-// Google Auth
-Route::get('/auth/google/callback', function () {
-    $user_google = Socialite::driver('google')->user();
 
-    $user = User::updateOrCreate([
-        'email' => $user_google->getEmail(),
-    ], [
-        'name' => $user_google->getName(),
-        'email' => $user_google->getEmail(),
-    ]);
-
-    Auth::login($user, true);
-
-    return redirect()->route('llistes.index');
-});
-Route::get('/auth/google/redirect', function () {
-    return Socialite::driver('google')->redirect();
-});
 
 
 

@@ -73,6 +73,47 @@
         color: #fff;
     }
 
+    /* Botons d'acció coherents (crear / tornar) */
+    .btn-top {
+        padding: 12px 20px;
+        border-radius: 6px;
+        font-size: 15px;
+        text-decoration: none;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: #fff;
+        transition: all 0.2s ease;
+        display: inline-block;
+        margin-left: 12px;
+    }
+
+    .btn-top:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn-top-main {
+        border: none;
+        background: linear-gradient(135deg, #a78bfa, #60a5fa);
+        color: #1a0b2e;
+        font-weight: 600;
+    }
+
+    .btn-top-main:hover {
+        background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+        color: #fff;
+    }
+
+    .btn-top-secondary {
+        border-color: #60a5fa;
+        color: #60a5fa;
+        background-color: rgba(96, 165, 250, 0.1);
+    }
+
+    .btn-top-secondary:hover {
+        background-color: #60a5fa;
+        color: #0f3460;
+    }
+
     .btn-main {
         border: none;
         background: linear-gradient(135deg, #a78bfa, #60a5fa);
@@ -98,7 +139,6 @@
     .list-group-item {
         border: 1px solid rgba(255, 255, 255, 0.2);
         border-radius: 8px;
-        margin-bottom: 12px;
         background: rgba(255, 255, 255, 0.05);
         backdrop-filter: blur(10px);
         transition: all 0.3s ease;
@@ -108,6 +148,13 @@
         background: rgba(255, 255, 255, 0.1);
         box-shadow: 0 4px 12px rgba(167, 139, 250, 0.3);
         transform: translateX(5px);
+    }
+
+    /* Disposició en dues columnes auto-ajustables */
+    .category-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 16px;
     }
 
     .alert {
@@ -153,37 +200,43 @@
 
     <!-- Botó de crear categoria -->
     <div class="create-button">
-        <a href="{{ route('categories.create', $llista->id_llista_compra) }}" class="btn btn-main">+ Crear categoria</a>
-     <a href="{{ route('llistes.editar', $llista->id_llista_compra) }}" class="btn btn-outline-primary">
-            ← Tornar a la llista
-        </a>
+        @if($potEditar)
+            <a href="{{ route('categories.create', $llista->id_llista_compra) }}" class="btn-top btn-top-main">+ Crear categoria</a>
+        @endif
+        <a href="{{ route('llistes.editar', $llista->id_llista_compra) }}" class="btn-top btn-top-secondary">← Tornar a la llista</a>
     </div>
    
 
     <!-- Categories -->
     @if($categories->count())
-        <ul class="list-group">
+        <div class="category-grid">
             @foreach($categories as $categoria)
-                <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div class="list-group-item d-flex justify-content-between align-items-center">
                     <strong id="nomCategoria">{{ $categoria->nom_categoria }}</strong>
-                    <div class="d-flex gap-2">
-                        <a id="botoEditar" href="{{ route('categories.editar', $categoria->id_categoria) }}" class="btn btn-sm btn-outline-warning">
-                            Editar
-                        </a>
-                        <form action="{{ route('categories.eliminar', $categoria->id_categoria) }}" method="POST" onsubmit="return confirm('Segur que vols eliminar aquesta categoria?');">
-                            @csrf
-                            @method('DELETE')
-                            <button id="botoEliminar" type="submit" class="btn btn-sm btn-outline-danger">
-                                Eliminar
-                            </button>
-                        </form>
-                    </div>
-                </li>
+                    @if($potEditar)
+                        <div class="d-flex gap-2">
+                            <a id="botoEditar" href="{{ route('categories.editar', $categoria->id_categoria) }}" class="btn btn-sm btn-outline-warning">
+                                Editar
+                            </a>
+                            <form action="{{ route('categories.eliminar', $categoria->id_categoria) }}" method="POST" onsubmit="return confirm('Segur que vols eliminar aquesta categoria?');">
+                                @csrf
+                                @method('DELETE')
+                                <button id="botoEliminar" type="submit" class="btn btn-sm btn-outline-danger">
+                                    Eliminar
+                                </button>
+                            </form>
+                        </div>
+                    @endif
+                </div>
             @endforeach
-        </ul>
+        </div>
     @else
         <div class="alert alert-info text-center">
-            No hi ha categories creades per aquesta llista. <a href="{{ route('categories.create', $llista->id_llista_compra) }}" style="color: #a78bfa; text-decoration: underline;">Crea una nova categoria</a>.
+            @if($potEditar)
+                No hi ha categories creades per aquesta llista. <a href="{{ route('categories.create', $llista->id_llista_compra) }}" style="color: #a78bfa; text-decoration: underline;">Crea una nova categoria</a>.
+            @else
+                No hi ha categories creades per aquesta llista.
+            @endif
         </div>
     @endif
 
