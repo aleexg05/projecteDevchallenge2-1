@@ -6,7 +6,7 @@
 <style>
 /* Botons generals */
 .btn {
-    padding: 12px 20px;
+    padding: 12px 20px; 
     border-radius: 6px;
     font-size: 15px;
     text-decoration: none;
