@@ -103,12 +103,22 @@
 <div class="container py-4">
     <h1 class="mb-4 text-center">➕ Crear producte</h1>
 
+    @if ($errors->any())
+        <div class="alert alert-danger" style="background: rgba(220, 38, 38, 0.2); border: 1px solid rgba(220, 38, 38, 0.5); color: #ffffff; border-radius: 6px; padding: 15px; margin-bottom: 20px;">
+            <ul style="margin: 0; padding-left: 20px;">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <form action="{{ route('productes.store', $llista->id_llista_compra) }}" method="POST">
         @csrf
 
         <div class="mb-3">
             <label for="nom_producte" class="form-label">Nom del producte</label>
-            <input type="text" name="nom_producte" id="nom_producte" class="form-control" placeholder="Escriu el nom del producte..." required>
+            <input type="text" name="nom_producte" id="nom_producte" class="form-control" placeholder="Escriu el nom del producte..." value="{{ old('nom_producte') }}" required>
         </div>
 
         <div class="mb-3">
@@ -133,7 +143,7 @@
 
         <div class="text-center mt-4">
             <button type="submit" class="btn btn-outline-primary">✅ Crear producte</button>
-            <a href="{{ route('llistes.editar', $llista->id_llista_compra) }}" class="btn btn-outline-secondary">❌ Cancel·lar</a>
+            <a href="{{ route('productes.index', $llista->id_llista_compra) }}" class="btn btn-outline-secondary">❌ Cancel·lar</a>
         </div>
     </form>
 </div>

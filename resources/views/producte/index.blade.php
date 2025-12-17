@@ -24,7 +24,7 @@
         color: rgba(255, 255, 255, 0.6) !important;
     }
 
-    /* Botons */
+    /* Botons generals */
     .btn {
         padding: 10px 18px;
         margin-top:20px;
@@ -84,6 +84,47 @@
         color: #fff;
     }
 
+    /* Botons d'acció coherents (crear / tornar) */
+    .btn-top {
+        padding: 12px 20px;
+        border-radius: 6px;
+        font-size: 15px;
+        text-decoration: none;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: #fff;
+        transition: all 0.2s ease;
+        display: inline-block;
+        margin-left: 12px;
+    }
+
+    .btn-top:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn-top-main {
+        border: none;
+        background: linear-gradient(135deg, #a78bfa, #60a5fa);
+        color: #1a0b2e;
+        font-weight: 600;
+    }
+
+    .btn-top-main:hover {
+        background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+        color: #fff;
+    }
+
+    .btn-top-secondary {
+        border-color: #60a5fa;
+        color: #60a5fa;
+        background-color: rgba(96, 165, 250, 0.1);
+    }
+
+    .btn-top-secondary:hover {
+        background-color: #60a5fa;
+        color: #0f3460;
+    }
+
     .list-group {
         list-style: none;
         padding: 0;
@@ -139,8 +180,10 @@
     <div class="header-actions">
         <h1>📦 Gestionar productes — {{ $llista->nom }}</h1>
         <div class="d-flex gap-2">
-            <a href="{{ route('productes.create', $llista->id_llista_compra) }}" class="btn btn-outline-primary">➕ Afegir producte</a>
-            <a href="{{ route('llistes.editar', $llista->id_llista_compra) }}" class="btn btn-outline-secondary">← Tornar a la llista</a>
+            @if($potEditar)
+                <a href="{{ route('productes.create', $llista->id_llista_compra) }}" class="btn-top btn-top-main">➕ Afegir producte</a>
+            @endif
+            <a href="{{ route('llistes.editar', $llista->id_llista_compra) }}" class="btn-top btn-top-secondary">← Tornar a la llista</a>
         </div>
     </div>
 
@@ -159,18 +202,20 @@
                             <span class="text-muted ms-2">— {{ $producte->etiqueta_producte }}</span>
                         @endif
                     </div>
-                    <div class="d-flex gap-2">
-                        <a href="{{ route('productes.edit', [$llista->id_llista_compra, $producte->id_producte]) }}" 
-   class="btn btn-sm btn-outline-warning">Editar</a>
+                    @if($potEditar)
+                        <div class="d-flex gap-2">
+                            <a href="{{ route('productes.edit', [$llista->id_llista_compra, $producte->id_producte]) }}" 
+       class="btn btn-sm btn-outline-warning">Editar</a>
 
-<form action="{{ route('productes.destroy', [$llista->id_llista_compra, $producte->id_producte]) }}" 
-      method="POST" onsubmit="return confirm('Eliminar producte?');">
-    @csrf
-    @method('DELETE')
-    <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
-</form>
+    <form action="{{ route('productes.destroy', [$llista->id_llista_compra, $producte->id_producte]) }}" 
+          method="POST" onsubmit="return confirm('Eliminar producte?');">
+        @csrf
+        @method('DELETE')
+        <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
+    </form>
 
-                    </div>
+                        </div>
+                    @endif
                 </li>
             @endforeach
         </ul>

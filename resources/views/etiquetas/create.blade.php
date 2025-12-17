@@ -77,17 +77,29 @@ input.form-control::placeholder {
 <div class="container py-4">
     <h1 class="mb-4 text-center">➕ Crear etiqueta</h1>
 
+    @if ($errors->any())
+        <div class="alert alert-danger" style="background: rgba(220, 38, 38, 0.2); border: 1px solid rgba(220, 38, 38, 0.5); color: #ffffff; border-radius: 6px; padding: 15px; margin-bottom: 20px;">
+            <ul style="margin: 0; padding-left: 20px;">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <form action="{{ route('etiquetas.store') }}" method="POST">
         @csrf
+        <input type="hidden" name="return_to" value="{{ $returnTo }}">
+        <input type="hidden" name="id_llista" value="{{ $id_llista ?? '' }}">
 
         <div class="mb-3">
             <label for="etiqueta_producte" class="form-label">Nom de l'etiqueta</label>
-            <input type="text" name="etiqueta_producte" id="etiqueta_producte" class="form-control" required>
+            <input type="text" name="etiqueta_producte" id="etiqueta_producte" class="form-control" value="{{ old('etiqueta_producte') }}" required>
         </div>
 
         <div class="text-center mt-4">
             <button type="submit" class="btn btn-outline-primary">✅ Crear etiqueta</button>
-            <a href="{{ route('etiquetas.index') }}" class="btn btn-outline-secondary">❌ Cancel·lar</a>
+            <a href="{{ $returnTo ? $returnTo : route('etiquetas.index') }}" class="btn btn-outline-secondary">❌ Cancel·lar</a>
         </div>
     </form>
 </div>

@@ -256,11 +256,16 @@
                     <strong id="nomLlista">{{ $llista->nom }}</strong>
                     <div class="llista-info">
                         Propietari: {{ $llista->creador->name }} · {{ $llista->productes->count() }} productes
+                        @if($llista->pivot->rol === 'visualitzador')
+                            · <span style="color: #60a5fa;">👁️ Visualitzador</span>
+                        @else
+                            · <span style="color: #a78bfa;">✏️ Administrador</span>
+                        @endif
                     </div>
                 </div>
                 <div class="d-flex gap-2">
                     <a href="{{ route('llistes.editar', $llista->id_llista_compra) }}" class="btn btn-sm btn-outline-warning">
-                        Veure
+                        {{ $llista->pivot->rol === 'administrador' ? 'Editar' : 'Veure' }}
                     </a>
                     <form action="{{ route('llistes.sortir', $llista->id_llista_compra) }}" method="POST" onsubmit="return confirm('Estàs segur que vols sortir d\'aquesta llista compartida?');">
                         @csrf

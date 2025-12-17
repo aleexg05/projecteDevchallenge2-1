@@ -102,6 +102,17 @@
         max-width: 1200px;
         margin: 0 auto;
     }
+
+    /* Espaiat millor entre els botons d'accions */
+    .button-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px; /* separació uniforme entre botons */
+        justify-content: center;
+    }
+    .button-group .btn {
+        margin: 0; /* el gap ja gestiona l'espaiat */
+    }
 </style>
 
 <div class="container py-4">
@@ -109,10 +120,17 @@
 
     <!-- Botons d'accions -->
     <div class="button-group justify-content-center mb-4">
-        <a href="{{ route('llistes.editarNom', $llista->id_llista_compra) }}" class="btn btn-outline-primary">✏️ Canviar nom</a>
-        <a href="{{ route('categories.index', $llista->id_llista_compra) }}" class="btn btn-outline-secondary">🏷️ Gestionar categories</a>
-        <a href="{{ route('productes.index', $llista->id_llista_compra) }}" class="btn btn-outline-secondary">📦 Gestionar productes</a>
-        <a href="{{ route('etiquetas.index') }}" class="btn btn-outline-secondary">🏷️ Gestionar etiquetes</a>
+        @if($potEditar)
+            <a href="{{ route('llistes.editarNom', $llista->id_llista_compra) }}" class="btn btn-outline-primary">✏️ Canviar nom</a>
+            <a href="{{ route('categories.index', $llista->id_llista_compra) }}" class="btn btn-outline-secondary">🏷️ Gestionar categories</a>
+            <a href="{{ route('productes.index', $llista->id_llista_compra) }}" class="btn btn-outline-secondary">📦 Gestionar productes</a>
+        @else
+            <a href="{{ route('categories.index', $llista->id_llista_compra) }}" class="btn btn-outline-secondary">🏷️ Veure categories</a>
+            <a href="{{ route('productes.index', $llista->id_llista_compra) }}" class="btn btn-outline-secondary">📦 Veure productes</a>
+        @endif
+        <a href="{{ route('llistes.etiquetas.index', ['id_llista' => $llista->id_llista_compra, 'return_to' => route('llistes.editar', $llista->id_llista_compra)]) }}" class="btn btn-outline-secondary">
+            🏷️ {{ $potEditar ? 'Gestionar etiquetes' : 'Veure etiquetes' }}
+        </a>
     </div>
 
     <!-- Productes agrupats per categories -->
